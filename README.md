@@ -7,7 +7,7 @@ If you're willing to try our testnet it's the right place to start. With this co
 - **dnode** - blockchain daemon connected to testnet; you've probably seen it but here's [official repository](https://github.com/dfinance/dnode)
 - **dvm** - [dfinance vm](https://github.com/dfinance/dvm) - essential component to our blockchain
 - **dnode-rest** - rest-server to provide simpler interface to blockchain storage. See [swagger here](https://swagger.testnet.dfinance.co).
-- **compiler** - local instance of dvm compiler; by default accessible on port :50053, you can use it when working in [Move IDE](https://github.com/damirka/vscode-move-ide)
+- **compiler** - local instance of dvm compiler; by default accessible on port :50053, you can use it with [Move IDE](https://github.com/damirka/vscode-move-ide)
 
 **Important:** all of the containers used in this composition are already on Docker hub, so if you want to try it yourself - [here's the link](https://hub.docker.com/u/dfinance).
 
@@ -21,7 +21,7 @@ For this option to work you'll need [Docker](https://www.docker.com/products/doc
 ### Step 2 - Clone this repo
 
 ```bash
-git clone git@github.com:dfinance/testnet-bootstrap.git dfinance-testnete
+git clone git@github.com:dfinance/testnet-bootstrap.git dfinance-testnet
 cd dfinance-testnet
 ```
 

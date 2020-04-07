@@ -3,11 +3,11 @@
 # set -x
 
 DNODE_SEEDS="${DNODE_SEEDS}"
-DNODE_MONIKER="${DNODE_MONIKER:-ba-dum-tss-node}"
+DNODE_MONIKER="${DNODE_MONIKER:-my-first-dfinance-node}"
 CHAIN_ID=${CHAIN_ID:-dn-testnet}
 
 ALLOW_DUPLICATE_IP="${ALLOW_DUPLICATE_IP:-true}"
-VM_ADDRESS="${VM_ADDRESS:-dvm-node:50051}"
+VM_ADDRESS="${VM_ADDRESS:-dvm:50051}"
 VM_DATA_LISTEN="${VM_DATA_LISTEN:-0.0.0.0:50052}"
 
 function iprintf {

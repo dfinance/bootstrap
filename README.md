@@ -1,6 +1,6 @@
 # dfinance testnet bootstrap
 
-If you're willing to try our testnet it's the right place to start. With this code you run your blockchain node in 4 steps.
+If you're willing to try our testnet it's the right place to start. With this code you can run your first blockchain node in 4 steps.
 
 ## What you'll get
 

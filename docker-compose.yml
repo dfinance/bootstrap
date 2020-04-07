@@ -1,0 +1,73 @@
+version: '3.7'
+
+services:
+
+    # Main components:
+    #
+    # - dnode (Dfinance Node) - Tendermint blockhain node which does all the storage-blocks-sync
+    #   tasks. It's useless for manual operations unless wbcli is used to send transactions or
+    #   read data via dnode's RPC endpoint.
+    #
+    # - dvm (Dfinance Move Virtual Machine) - no need to explain. :)
+    #
+    # You can play with them any way you want but keep in mind that:
+    #
+    # 1. Tendemint node ID is hardcoded into `./config/config.toml`, we've done it on purpose.
+    #    Node ID there is our testnet bootnode which opened P2P port for you to sync with chain.
+    #
+    # 2. VM is a MUST, it's a server which executes code and responds to dnode with execution results
+    #    Just keep it running - won't hurt.
+
+    dvm:
+        container_name: dvm
+        image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/dvm:${DVM_TAG}
+        restart: always
+        command: ./dvm "0.0.0.0:50051" "http://dnode:50052"
+
+    dnode:
+        container_name: dnode
+        depends_on: ["dvm"]
+        image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/dnode:${DNODE_TAG}
+        restart: always
+        ports:
+            - '26657:26657'
+        volumes:
+            - ./entrypoint.sh:/entrypoint.sh
+            - ./config:/root/.dnode/config
+            - data-dnode:/root/.dnode/data
+        env_file: '.env'
+        entrypoint: /entrypoint.sh
+        command: dnode start
+
+    # Utilities:
+    #
+    # - dncli - rest-server to get blockchain data in organised and more informative way.
+    #   Try these routes:
+    #       - localhost:1317/blocks/latest
+    #       - localhost:1317/txs/:TX_ID
+    #   If you change `REST_PORT` variable in `.env` or in this file - be sure to put correct port in
+    #   your API requests - default is 1317.
+    #
+    # - Compiler - service which compiles your contracts and/or transaction scripts. It's a service
+    #   because it uses WBD data to check dependencies and standard libraries in your code.
+    #   Currently you can't work with it directly - only via wbcli.
+
+    dnode-rest:
+        container_name: dnode-rest
+        depends_on: ["dnode"]
+        image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/dnode:${DNODE_TAG}
+        restart: always
+        ports:
+            - '${DNODE_REST_PORT:-1317}:1317'
+        command: dncli rest-server --chain-id ${CHAIN_ID} --trust-node --node tcp://dnode:26657 --laddr tcp://0.0.0.0:1317
+
+    compiler:
+        container_name: compiler
+        depends_on: ["dnode"]
+        image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/dvm:${DVM_TAG}
+        ports:
+            - '${DVM_COMPILER_PORT:-50053}:50053'
+        command: ./compiler "0.0.0.0:50053" "http://dnode:50052"
+
+volumes:
+    data-dnode:

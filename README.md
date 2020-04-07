@@ -49,3 +49,8 @@ curl localhost:1317/blocks/latest # get last block
 ```
 
 See [Swagger UI](https://swagger.testnet.dfinance.co) for full API reference.
+
+## Contribution
+
+If you've got any questions or if something went wrong, feel free to [open an issue](https://github.com/dfinance/testnet-bootstrap/issues/new).
+

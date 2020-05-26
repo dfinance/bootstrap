@@ -22,7 +22,7 @@ services:
         container_name: dvm
         image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/dvm:${DVM_TAG}
         restart: always
-        command: ./dvm "0.0.0.0:50051" "http://dnode:50052"
+        command: ./dvm "http://0.0.0.0:50051" "http://dnode:50052"
 
     dnode:
         container_name: dnode
@@ -67,7 +67,7 @@ services:
         image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/dvm:${DVM_TAG}
         ports:
             - '${DVM_COMPILER_PORT:-50053}:50053'
-        command: ./compiler "0.0.0.0:50053" "http://dnode:50052"
+        command: ./compiler "http://0.0.0.0:50053" "http://dnode:50052"
 
 volumes:
     data-dnode:

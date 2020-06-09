@@ -20,14 +20,14 @@ services:
 
     dvm:
         container_name: dvm
-        image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/dvm:${DVM_TAG}
+        image: ${REGISTRY_HOST:-registry.hub.docker.com}/${REGISTRY_GROUP:-dfinance}/dvm:${DVM_TAG:-latest}
         restart: always
         command: ./dvm "http://0.0.0.0:50051" "http://dnode:50052"
 
     dnode:
         container_name: dnode
         depends_on: ["dvm"]
-        image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/dnode:${DNODE_TAG}
+        image: ${REGISTRY_HOST:-registry.hub.docker.com}/${REGISTRY_GROUP:-dfinance}/dnode:${DNODE_TAG:-latest}
         restart: always
         ports:
             - '26657:26657'
@@ -35,7 +35,11 @@ services:
             - ./entrypoint.sh:/entrypoint.sh
             - ./config:/root/.dnode/config
             - data-dnode:/root/.dnode/data
-        env_file: '.env'
+        environment:
+            GENESIS_RPC_ENDPOINT: ${GENESIS_RPC_ENDPOINT:-https://rpc.testnet.dfinance.co/genesis}
+            DNODE_MONIKER: ${DNODE_MONIKER:-my-first-dfinance-node}
+            CHAIN_ID: ${CHAIN_ID:-dn-testnet}
+            DNODE_SEEDS: ${DNODE_SEEDS}
         entrypoint: /entrypoint.sh
         command: dnode start
 
@@ -55,16 +59,16 @@ services:
     dnode-rest:
         container_name: dnode-rest
         depends_on: ["dnode"]
-        image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/dnode:${DNODE_TAG}
+        image: ${REGISTRY_HOST:-registry.hub.docker.com}/${REGISTRY_GROUP:-dfinance}/dnode:${DNODE_TAG:-latest}
         restart: always
         ports:
             - '${DNODE_REST_PORT:-1317}:1317'
-        command: dncli rest-server --chain-id ${CHAIN_ID} --trust-node --node tcp://dnode:26657 --laddr tcp://0.0.0.0:1317
+        command: dncli rest-server --chain-id ${CHAIN_ID:-dn-testnet} --trust-node --node tcp://dnode:26657 --laddr tcp://0.0.0.0:1317
 
     compiler:
         container_name: compiler
         depends_on: ["dnode"]
-        image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/dvm:${DVM_TAG}
+        image: ${REGISTRY_HOST:-registry.hub.docker.com}/${REGISTRY_GROUP:-dfinance}/dvm:${DVM_TAG:-latest}
         ports:
             - '${DVM_COMPILER_PORT:-50053}:50053'
         command: ./compiler "http://0.0.0.0:50053" "http://dnode:50052"

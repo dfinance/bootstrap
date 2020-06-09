@@ -1,10 +1,11 @@
 #!/bin/sh
 
 # set -x
+set -e
 
-DNODE_SEEDS="${DNODE_SEEDS}"
 DNODE_MONIKER="${DNODE_MONIKER:-my-first-dfinance-node}"
-CHAIN_ID=${CHAIN_ID:-dn-testnet}
+CHAIN_ID="${CHAIN_ID:-dn-testnet}"
+GENESIS_RPC_ENDPOINT="${GENESIS_RPC_ENDPOINT:-https://rpc.testnet.dfinance.co/genesis}"
 
 ALLOW_DUPLICATE_IP="${ALLOW_DUPLICATE_IP:-true}"
 VM_ADDRESS="${VM_ADDRESS:-dvm:50051}"
@@ -50,6 +51,16 @@ fi
 
 iprintf "Download actual genesis.json file"
 wget -q ${GENESIS_RPC_ENDPOINT} -O - | jq -r '.result.genesis' > ${_genesis_file}
+
+if [ -z "${DNODE_SEEDS}" ]; then
+  DNODE_SEEDS=$(jq -r '
+            .app_state.genutil.gentxs[].value |
+            select(.msg[0].value.description.moniker == "bootnode") |
+            try(.memo |= split("@")) |
+            .memo[0] + "@rpc.testnet.dfinance.co:26656"
+          ' ${_genesis_file})
+  iprintf "Use the following DNODE_SEEDS: ${DNODE_SEEDS}"
+fi
 
 iprintf "Configure vm.toml from variables"
 if [ ! -z "${VM_ADDRESS}" ]; then

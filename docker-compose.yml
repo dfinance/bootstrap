@@ -22,7 +22,10 @@ services:
         container_name: dvm
         image: ${REGISTRY_HOST:-registry.hub.docker.com}/${REGISTRY_GROUP:-dfinance}/dvm:${DVM_TAG:-latest}
         restart: always
-        command: ./dvm "http://0.0.0.0:50051" "http://dnode:50052"
+        ports:
+            - '9003:9001'   # metrics
+            - '50051:50051' # compiler
+        command: ./dvm -i 0.0.0.0:9001 "http://0.0.0.0:50051" "http://dnode:50052"
 
     dnode:
         container_name: dnode
@@ -64,14 +67,6 @@ services:
         ports:
             - '${DNODE_REST_PORT:-1317}:1317'
         command: dncli rest-server --chain-id ${CHAIN_ID:-dn-testnet} --trust-node --node tcp://dnode:26657 --laddr tcp://0.0.0.0:1317
-
-    compiler:
-        container_name: compiler
-        depends_on: ["dnode"]
-        image: ${REGISTRY_HOST:-registry.hub.docker.com}/${REGISTRY_GROUP:-dfinance}/dvm:${DVM_TAG:-latest}
-        ports:
-            - '${DVM_COMPILER_PORT:-50053}:50053'
-        command: ./compiler "http://0.0.0.0:50053" "http://dnode:50052"
 
 volumes:
     data-dnode:

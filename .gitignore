@@ -1,3 +1,4 @@
 # env file for being able to modify it
 .env
 config/
+data/

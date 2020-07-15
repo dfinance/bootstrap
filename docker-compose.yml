@@ -36,8 +36,9 @@ services:
             - '26657:26657'
         volumes:
             - ./entrypoint.sh:/entrypoint.sh
-            - ./config:/root/.dnode/config
-            - data-dnode:/root/.dnode/data
+            - ./config/.dncli:/root/.dncli
+            - ./config/.dnode:/root/.dnode/config
+            - ./data:/root/.dnode/data
         environment:
             GENESIS_RPC_ENDPOINT: ${GENESIS_RPC_ENDPOINT:-https://rpc.testnet.dfinance.co/genesis}
             DNODE_MONIKER: ${DNODE_MONIKER:-my-first-dfinance-node}
@@ -67,6 +68,3 @@ services:
         ports:
             - '${DNODE_REST_PORT:-1317}:1317'
         command: dncli rest-server --chain-id ${CHAIN_ID:-dn-testnet} --trust-node --node tcp://dnode:26657 --laddr tcp://0.0.0.0:1317
-
-volumes:
-    data-dnode:

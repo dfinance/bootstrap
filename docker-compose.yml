@@ -6,7 +6,7 @@ services:
     #
     # - dnode (Dfinance Node) - Tendermint blockhain node which does all the storage-blocks-sync
     #   tasks. It's useless for manual operations unless wbcli is used to send transactions or
-    #   read data via dnode's RPC endpoint.
+    #   read data via dnode s RPC endpoint.
     #
     # - dvm (Dfinance Move Virtual Machine) - no need to explain. :)
     #

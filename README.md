@@ -2,7 +2,7 @@
 
 If you're willing to try our testnet it's the right place to start. With this code you can run your first blockchain node in 4 steps.
 
-## What you'll get
+## What you get
 
 - **dnode** - blockchain daemon connected to testnet; you've probably seen it but here's [official repository](https://github.com/dfinance/dnode)
 - **dvm** - [dfinance vm](https://github.com/dfinance/dvm) - essential component to our blockchain
@@ -10,7 +10,6 @@ If you're willing to try our testnet it's the right place to start. With this co
 - **compiler** - local instance of dvm compiler; by default accessible on port :50053, you can use it with [Move IDE](https://github.com/damirka/vscode-move-ide)
 
 **Important:** all of the containers used in this composition are already on Docker hub, so if you want to try it yourself - [here's the link](https://hub.docker.com/u/dfinance).
-
 
 ## Four step guide into testnet
 
@@ -43,12 +42,65 @@ docker-compose pull && docker-compose up -d
 ```
 
 To check if it works let's do few simple requests:
+
 ```bash
-curl localhost:1317/node_info # just checking
+curl localhost:1317/node_info     # node info check
 curl localhost:1317/blocks/latest # get last block
 ```
 
 See [Swagger UI](https://swagger.testnet.dfinance.co) for full API reference.
+
+## Additional commands
+
+Pull newest version and restart containers
+
+```bash
+docker-compose pull && docker-compose up -d
+```
+
+Stop everything
+
+```bash
+docker-compose down
+```
+
+Open terminal inside running container
+
+```bash
+docker-compose exec PUT_SERVICE_HERE bash
+
+docker-compose exec dnode bash
+docker-compose exec dvm bash
+```
+
+## Advanced use (optional)
+
+### Initialization of dnode config
+
+```sh
+docker-compose run --rm --no-deps --entrypoint '' dnode dnode init my-node-name --chain-id dn-testnet
+```
+
+- `--rm` - remove container after it's been used
+- `--no-deps` - run without dependencies
+- `--entrypoint ''` - disabling entry point for this run
+- `dnode` - docker-compose service name
+- `dnode init my-node-name --chain-id dn-testnet` - init command which is run in container
+- `my-node-name` - node name/moniker
+
+### Custom Configuration
+
+In case you're running a local network or experimenting with setup, you can use these configuration variables:
+
+- `REGISTRY_HOST` - (default: `registry.hub.docker.com`) Docker registry address
+- `REGISTRY_GROUP` - (default: `dfinance`) Docker registry user/group
+- `CHAIN_ID` - (default: `dn-testnet`)
+- `GENESIS_RPC_ENDPOINT` - (default: `https://rpc.testnet.dfinance.co/genesis`) Url for download genesis
+- `DNODE_MONIKER` - (default: `my-first-dfinance-node`) Node name/moniker
+- `DNODE_TAG` - (default: `latest`)  Docker version tag for dnode
+- `DVM_TAG` - (default: `latest`) Docker version tag for dvm
+
+Additional configuration options can be found in `config/*.toml` files.
 
 ## Contribution
 

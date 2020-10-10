@@ -61,15 +61,15 @@ fi
 iprintf "Download actual genesis.json file"
 wget -q ${GENESIS_RPC_ENDPOINT} -O - | jq -r '.result.genesis' > ${_genesis_file}
 
-if [ -z "${DNODE_SEEDS}" ]; then
-  DNODE_SEEDS=$(jq -r '
-            [
-              .app_state.genutil.gentxs[]
-              | .value.memo
-            ] | join(",")
-            ' ${_genesis_file})
-  iprintf "Use the following DNODE_SEEDS: ${DNODE_SEEDS}"
-fi
+# if [ -z "${DNODE_SEEDS}" ]; then
+#   DNODE_SEEDS=$(jq -r '
+#             [
+#               .app_state.genutil.gentxs[]
+#               | .value.memo
+#             ] | join(",")
+#             ' ${_genesis_file})
+#   iprintf "Use the following DNODE_SEEDS: ${DNODE_SEEDS}"
+# fi
 
 iprintf "Configure vm.toml from variables"
 if [[ ! -z "${VM_ADDRESS}" ]]; then
@@ -80,6 +80,9 @@ if [[ ! -z "${VM_DATA_LISTEN}" ]]; then
 fi
 
 iprintf "Configure config.toml from variables"
+if [ ! -z "${EXTERNAL_ADDRESS}" ]; then
+  sed -i "s|external_address =.*|external_address = \"${EXTERNAL_ADDRESS}\"|g" "${_config_file}"
+fi
 if [[ ! -z "${ALLOW_DUPLICATE_IP}" ]]; then
   sed -i "s|allow_duplicate_ip =.*|allow_duplicate_ip = \"${ALLOW_DUPLICATE_IP}\"|g" "${_config_file}"
 fi
@@ -88,6 +91,12 @@ if [[ ! -z "${DNODE_MONIKER}" ]]; then
 fi
 if [[ ! -z "${DNODE_SEEDS}" ]]; then
   sed -i "s|seeds =.*|seeds = \"${DNODE_SEEDS}\"|g" "${_config_file}"
+fi
+if [[ ! -z "${PERSISTENT_PEERS}" ]]; then
+  sed -i "s|persistent_peers =.*|persistent_peers = \"${PERSISTENT_PEERS}\"|g" "${_config_file}"
+fi
+if [[ ! -z "${SEED_MODE}" ]]; then
+  sed -i "s|seed_mode =.*|seed_mode = \"${SEED_MODE}\"|g" "${_config_file}"
 fi
 if [[ ! -z "${RPC_LISTEN_ADDRESS}" ]]; then
   iprintf "Change RPC laddr from 'tcp://.*:26657' to 'tcp://${RPC_LISTEN_ADDRESS}:26657'"

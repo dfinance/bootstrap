@@ -96,6 +96,7 @@ In case you're running a local network or experimenting with setup, you can use 
 - `REGISTRY_GROUP` - (default: `dfinance`) Docker registry user/group
 - `CHAIN_ID` - (default: `dn-testnet`)
 - `GENESIS_RPC_ENDPOINT` - (default: `https://rpc.testnet.dfinance.co/genesis`) Url for download genesis
+- `EXTERNAL_ADDRESS` - (default: `none`) Address to advertise to peers for them to dial (Set your public IP, example: `tcp://x.x.x.x:26656`)
 - `DNODE_MONIKER` - (default: `my-first-dfinance-node`) Node name/moniker
 - `DNODE_TAG` - (default: `latest`)  Docker version tag for dnode
 - `DVM_TAG` - (default: `latest`) Docker version tag for dvm

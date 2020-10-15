@@ -103,6 +103,63 @@ In case you're running a local network or experimenting with setup, you can use 
 
 Additional configuration options can be found in `config/*.toml` files.
 
+## Easy-fast deployment of the validator
+You need to have installed:
+- [docker](https://docs.docker.com/engine/install/)
+- [docker-compose](https://docs.docker.com/compose/install/)
+
+And execute the following commands, substituting the required values:
+
+```sh
+cd /opt
+git clone https://github.com/dfinance/testnet-bootstrap.git
+cd testnet-bootstrap
+
+# Generate .env file
+cat << EOF > .env
+REGISTRY_HOST=registry.hub.docker.com
+REGISTRY_GROUP=dfinance
+DNODE_SEEDS=b57d87dac7a9f77fbb11eb0f137a922fcc44cf0c@pub.testnet.dfinance.co:26656
+DNODE_TAG=latest
+DVM_TAG=latest
+EXTERNAL_ADDRESS=tcp://<YOU_PUBLIC_IP>:26656
+DNODE_MONIKER=<you_moniker>
+EOF
+
+# add alias
+cat << EOF >> ~/.profile
+alias dnode="docker-compose -f /opt/testnet-bootstrap/docker-compose.yml exec dnode dnode"
+alias dncli="docker-compose -f /opt/testnet-bootstrap/docker-compose.yml exec dnode-rest dncli"
+EOF
+
+# start node
+docker-compose pull	# Get latest docker container
+docker-compose up -d
+
+# show logs
+docker-compose logs -f --tail 10
+
+# generate new mnemonic
+dncli keys mnemonic
+
+# create account
+dncli keys add -i <my-account>
+
+# show pubkey
+dnode tendermint show-validator
+
+# add validator
+dncli tx staking create-validator \
+  --amount=2500000000000000000000sxfi \
+  --pubkey=<pub_key> \
+  --moniker=<moniker> \
+  --commission-rate="0.10" \
+  --commission-max-rate="0.20" \
+  --commission-max-change-rate="0.01" \
+  --min-self-delegation="2500000000000000000000" \
+  --from <my-account>
+```
+
 ## Contribution
 
 If you've got any questions or if something went wrong, feel free to [open an issue](https://github.com/dfinance/testnet-bootstrap/issues/new).

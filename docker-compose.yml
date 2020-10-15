@@ -37,6 +37,7 @@ services:
             - '${DNODE_RPC_PORT:-26657}:26657' # rpc
         volumes:
             - ./entrypoint.sh:/entrypoint.sh
+            - ./genesis.json:/tmp/genesis.json
             - ./config/.dncli:/root/.dncli
             - ./config/.dnode:/root/.dnode/config
             - ./data:/root/.dnode/data

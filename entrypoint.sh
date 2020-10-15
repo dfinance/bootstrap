@@ -5,7 +5,7 @@ set -e
 
 DNODE_MONIKER="${DNODE_MONIKER:-my-first-dfinance-node}"
 CHAIN_ID="${CHAIN_ID:-dn-testnet}"
-GENESIS_RPC_ENDPOINT="${GENESIS_RPC_ENDPOINT:-https://rpc.testnet.dfinance.co/genesis}"
+# GENESIS_RPC_ENDPOINT="${GENESIS_RPC_ENDPOINT:-https://rpc.testnet.dfinance.co/genesis}"
 
 ALLOW_DUPLICATE_IP="${ALLOW_DUPLICATE_IP:-false}"
 VM_ADDRESS="${VM_ADDRESS:-dvm:50051}"
@@ -58,8 +58,13 @@ if [[ ! -f "${_priv_validator_state_file}" ]]; then
 EOF
 fi
 
-iprintf "Download actual genesis.json file"
-wget -q ${GENESIS_RPC_ENDPOINT} -O - | jq -r '.result.genesis' > ${_genesis_file}
+if [ ! -z "${GENESIS_RPC_ENDPOINT}" ]; then
+  iprintf "Download actual genesis.json file from ${GENESIS_RPC_ENDPOINT}"
+  wget -q ${GENESIS_RPC_ENDPOINT} -O - | jq -r '.result.genesis' > ${_genesis_file}
+else
+  iprintf "Copy local genesis.json file"
+  cp /tmp/genesis.json ${_genesis_file}
+fi
 
 # if [ -z "${DNODE_SEEDS}" ]; then
 #   DNODE_SEEDS=$(jq -r '

@@ -25,8 +25,8 @@ services:
         environment:
             DVM_LOG: error
         ports:
-            - '9003:9001'   # metrics
-            - '50051:50051' # compiler
+            - '127.0.0.0:9001:9001'   # metrics
+            - '127.0.0.0:50051:50051' # compiler
         command: ./dvm -i 0.0.0.0:9001 "http://0.0.0.0:50051" "http://dnode:50052"
 
     dnode:
@@ -36,7 +36,7 @@ services:
         restart: always
         ports:
             - '${DNODE_P2P_PORT:-26656}:26656' # p2p
-            - '${DNODE_RPC_PORT:-26657}:26657' # rpc
+            - '${DNODE_RPC_PORT:-127.0.0.0:26657}:26657' # rpc
         volumes:
             - ./entrypoint.sh:/entrypoint.sh
             - ./genesis.json:/tmp/genesis.json
@@ -77,5 +77,5 @@ services:
             - ./config/.dnode:/root/.dnode/config
             - ./data:/root/.dnode/data
         ports:
-            - '${DNODE_REST_PORT:-1317}:1317' # rest
+            - '${DNODE_REST_PORT:-127.0.0.0:1317}:1317' # rest
         command: dncli rest-server --chain-id ${CHAIN_ID:-dn-testnet} --trust-node --node tcp://dnode:26657 --laddr tcp://0.0.0.0:1317

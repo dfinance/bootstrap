@@ -39,14 +39,14 @@ services:
             - '${DNODE_RPC_PORT:-127.0.0.1:26657}:26657' # rpc
         volumes:
             - ./entrypoint.sh:/entrypoint.sh
-            - ./genesis.json:/tmp/genesis.json
+            - ./genesis:/tmp/genesis
             - ./config/.dncli:/root/.dncli
             - ./config/.dnode:/root/.dnode/config
             - ./data:/root/.dnode/data
         environment:
-            GENESIS_RPC_ENDPOINT: ${GENESIS_RPC_ENDPOINT:-https://rpc.testnet.dfinance.co/genesis}
+            GENESIS_RPC_ENDPOINT: ${GENESIS_RPC_ENDPOINT}
             DNODE_MONIKER: ${DNODE_MONIKER:-my-first-dfinance-node}
-            CHAIN_ID: ${CHAIN_ID:-dn-testnet}
+            CHAIN_ID: ${CHAIN_ID}
             DNODE_SEEDS: ${DNODE_SEEDS}
             EXTERNAL_ADDRESS: ${EXTERNAL_ADDRESS}
             PERSISTENT_PEERS: ${PERSISTENT_PEERS}
@@ -78,4 +78,4 @@ services:
             - ./data:/root/.dnode/data
         ports:
             - '${DNODE_REST_PORT:-127.0.0.1:1317}:1317' # rest
-        command: dncli rest-server --chain-id ${CHAIN_ID:-dn-testnet} --trust-node --node tcp://dnode:26657 --laddr tcp://0.0.0.0:1317
+        command: dncli rest-server --chain-id ${CHAIN_ID} --trust-node --node tcp://dnode:26657 --laddr tcp://0.0.0.0:1317

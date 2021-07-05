@@ -5,7 +5,7 @@ set -e
 
 apk add jq
 
-DNODE_MONIKER="${DNODE_MONIKER:-my-first-dfinance-node}"
+NODE_MONIKER="${NODE_MONIKER:-my-first-dfinance-node}"
 CHAIN_ID="${CHAIN_ID}"
 # GENESIS_RPC_ENDPOINT="${GENESIS_RPC_ENDPOINT:-https://rpc.dfinance.co/genesis}"
 
@@ -45,7 +45,7 @@ if [[ ! -f "${_node_key_file}" || ! -f "${_priv_validator_key_file}" ]]; then
   fi
 
   iprintf "Generate new configs"
-  ./dstation init ${DNODE_MONIKER} --chain-id ${CHAIN_ID}
+  ./dstation init ${NODE_MONIKER} --chain-id ${CHAIN_ID}
   ./dstation set-genesis-defaults
 fi
 
@@ -74,14 +74,14 @@ else
   fi
 fi
 
-# if [ -z "${DNODE_SEEDS}" ]; then
-#   DNODE_SEEDS=$(jq -r '
+# if [ -z "${NODE_SEEDS}" ]; then
+#   NODE_SEEDS=$(jq -r '
 #             [
 #               .app_state.genutil.gentxs[]
 #               | .value.memo
 #             ] | join(",")
 #             ' ${_genesis_file})
-#   iprintf "Use the following DNODE_SEEDS: ${DNODE_SEEDS}"
+#   iprintf "Use the following NODE_SEEDS: ${NODE_SEEDS}"
 # fi
 
 iprintf "Configure vm.toml from variables"
@@ -104,11 +104,11 @@ fi
 if [[ ! -z "${ALLOW_DUPLICATE_IP}" ]]; then
   sed -i "s|allow_duplicate_ip =.*|allow_duplicate_ip = \"${ALLOW_DUPLICATE_IP}\"|g" "${_config_file}"
 fi
-if [[ ! -z "${DNODE_MONIKER}" ]]; then
-  sed -i "s|moniker =.*|moniker = \"${DNODE_MONIKER}\"|g" "${_config_file}"
+if [[ ! -z "${NODE_MONIKER}" ]]; then
+  sed -i "s|moniker =.*|moniker = \"${NODE_MONIKER}\"|g" "${_config_file}"
 fi
-if [[ ! -z "${DNODE_SEEDS}" ]]; then
-  sed -i "s|seeds =.*|seeds = \"${DNODE_SEEDS}\"|g" "${_config_file}"
+if [[ ! -z "${NODE_SEEDS}" ]]; then
+  sed -i "s|seeds =.*|seeds = \"${NODE_SEEDS}\"|g" "${_config_file}"
 fi
 if [[ ! -z "${PERSISTENT_PEERS}" ]]; then
   sed -i "s|persistent_peers =.*|persistent_peers = \"${PERSISTENT_PEERS}\"|g" "${_config_file}"

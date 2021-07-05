@@ -27,55 +27,29 @@ services:
         ports:
             - '127.0.0.1:9001:9001'   # metrics
             - '127.0.0.1:50051:50051' # compiler
-        command: ./dvm -i 0.0.0.0:9001 "http://0.0.0.0:50051" "http://dnode:50052"
+        command: ./dvm -i 0.0.0.0:9001 "http://0.0.0.0:50051" "http://node:50052"
 
-    dnode:
-        container_name: dnode
+    node:
+        container_name: node
         depends_on: ["dvm"]
-        image: ${REGISTRY_HOST:-registry.hub.docker.com}/${REGISTRY_GROUP:-dfinance}/dnode:${DNODE_TAG:-latest}
+        image: ${REGISTRY_HOST:-registry.hub.docker.com}/${REGISTRY_GROUP:-dfinance}/dstation:${NODE_TAG:-latest}
         restart: always
         ports:
-            - '${DNODE_P2P_PORT:-26656}:26656' # p2p
-            - '${DNODE_RPC_PORT:-127.0.0.1:26657}:26657' # rpc
+            - '${NODE_P2P_PORT:-26656}:26656' # p2p
+            - '${NODE_REST_PORT:-127.0.0.1:1317}:1317' # rest
+            - '${NODE_RPC_PORT:-127.0.0.1:26657}:26657' # rpc
         volumes:
             - ./entrypoint.sh:/entrypoint.sh
             - ./genesis:/tmp/genesis
-            - ./config/.dncli:/root/.dncli
-            - ./config/.dnode:/root/.dnode/config
-            - ./data:/root/.dnode/data
+            - ./config/.dstation:/root/.dstation/config
+            - ./data:/root/.dstation/data
         environment:
             GENESIS_RPC_ENDPOINT: ${GENESIS_RPC_ENDPOINT}
-            DNODE_MONIKER: ${DNODE_MONIKER:-my-first-dfinance-node}
+            NODE_MONIKER: ${NODE_MONIKER:-my-first-dfinance-node}
             CHAIN_ID: ${CHAIN_ID}
-            DNODE_SEEDS: ${DNODE_SEEDS}
+            NODE_SEEDS: ${NODE_SEEDS}
             EXTERNAL_ADDRESS: ${EXTERNAL_ADDRESS}
             PERSISTENT_PEERS: ${PERSISTENT_PEERS}
             SEED_MODE: ${SEED_MODE}
         entrypoint: /entrypoint.sh
-        command: dnode start
-
-    # Utilities:
-    #
-    # - dncli - rest-server to get blockchain data in organised and more informative way.
-    #   Try these routes:
-    #       - localhost:1317/blocks/latest
-    #       - localhost:1317/txs/:TX_ID
-    #   If you change `REST_PORT` variable in `.env` or in this file - be sure to put correct port in
-    #   your API requests - default is 1317.
-    #
-    # - Compiler - service which compiles your contracts and/or transaction scripts. It's a service
-    #   because it uses WBD data to check dependencies and standard libraries in your code.
-    #   Currently you can't work with it directly - only via wbcli.
-
-    dnode-rest:
-        container_name: dnode-rest
-        depends_on: ["dnode"]
-        image: ${REGISTRY_HOST:-registry.hub.docker.com}/${REGISTRY_GROUP:-dfinance}/dnode:${DNODE_TAG:-latest}
-        restart: always
-        volumes:
-            - ./config/.dncli:/root/.dncli
-            - ./config/.dnode:/root/.dnode/config
-            - ./data:/root/.dnode/data
-        ports:
-            - '${DNODE_REST_PORT:-127.0.0.1:1317}:1317' # rest
-        command: dncli rest-server --chain-id ${CHAIN_ID} --trust-node --node tcp://dnode:26657 --laddr tcp://0.0.0.0:1317
+        command: ./dstation start --inv-check-period=50

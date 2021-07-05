@@ -1,6 +1,0 @@
-chain-id = "dn-testnet"
-compiler = "tcp://dvm:50051"
-indent = true
-node = "http://dnode:26657"
-output = "json"
-trust-node = true

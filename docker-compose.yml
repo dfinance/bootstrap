@@ -52,4 +52,4 @@ services:
             PERSISTENT_PEERS: ${PERSISTENT_PEERS}
             SEED_MODE: ${SEED_MODE}
         entrypoint: /entrypoint.sh
-        command: ./dstation start --inv-check-period=50 --pruning="${PRUNING_MODE}"
+        command: ./dstation start --inv-check-period=50

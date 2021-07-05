@@ -1,7 +1,9 @@
-#!/bin/bash
+#!/bin/sh
 
 # set -x
 set -e
+
+apk add jq
 
 DNODE_MONIKER="${DNODE_MONIKER:-my-first-dfinance-node}"
 CHAIN_ID="${CHAIN_ID}"
@@ -16,43 +18,45 @@ function iprintf {
   echo -e "\033[0;32m$(date +"%Y.%m.%d %H:%M:%S")\t$@\033[0m"
 }
 
-_dnode_path='/root/.dnode'
-_priv_validator_state_file="${_dnode_path}/data/priv_validator_state.json"
-_dnode_config_path="${_dnode_path}/config"
-_genesis_file="${_dnode_config_path}/genesis.json"
-_app_file="${_dnode_config_path}/app.toml"
-_config_file="${_dnode_config_path}/config.toml"
-_vm_file="${_dnode_config_path}/vm.toml"
-_node_key_file="${_dnode_config_path}/node_key.json"
-_priv_validator_key_file="${_dnode_config_path}/priv_validator_key.json"
+_node_path='/root/.dstation'
+_priv_validator_state_file="${_node_path}/data/priv_validator_state.json"
+_node_config_path="${_node_path}/config"
+_genesis_file="${_node_config_path}/genesis.json"
+_app_file="${_node_config_path}/app.toml"
+_config_file="${_node_config_path}/config.toml"
+_client_file="${_node_config_path}/client.toml"
+_vm_file="${_node_config_path}/vm.toml"
+_node_key_file="${_node_config_path}/node_key.json"
+_priv_validator_key_file="${_node_config_path}/priv_validator_key.json"
 
-mkdir -p ${_dnode_config_path} ${_dnode_path}/data
+mkdir -p ${_node_config_path} ${_node_path}/data
 
 # check if first run
 if [[ ! -f "${_node_key_file}" || ! -f "${_priv_validator_key_file}" ]]; then
   iprintf "Not found 'node_key.json' or/and 'priv_validator_key.json'"
   # iprintf "Remove old configs"
-  # rm -rf ${_dnode_config_path}/*
+  # rm -rf ${_node_config_path}/*
 
-  if [[ ! -z "$(ls ${_dnode_config_path})" ]]; then
-    _old_folder_path="${_dnode_config_path}/old_$(date +'%Y.%m.%d_%H%M%S')"
+  if [[ ! -z "$(ls ${_node_config_path})" ]]; then
+    _old_folder_path="${_node_config_path}/old_$(date +'%Y.%m.%d_%H%M%S')"
     mkdir -p ${_old_folder_path}
     iprintf "Copy old files to path: ${_old_folder_path##*/}"
-    cp ${_dnode_config_path}/*.{json,toml} ${_old_folder_path}
+    cp ${_node_config_path}/*.{json,toml} ${_old_folder_path}
   fi
 
   iprintf "Generate new configs"
-  dnode init ${DNODE_MONIKER} --chain-id ${CHAIN_ID}
+  ./dstation init ${DNODE_MONIKER} --chain-id ${CHAIN_ID}
+  ./dstation set-genesis-defaults
 fi
 
 
 if [[ ! -f "${_priv_validator_state_file}" ]]; then
   iprintf "Create priv_validator_state.json"
-  mkdir -p ${_dnode_path}/data
+  mkdir -p ${_node_path}/data
   cat << EOF > ${_priv_validator_state_file}
 {
   "height": "0",
-  "round": "0",
+  "round": 0,
   "step": 0
 }
 EOF
@@ -63,7 +67,7 @@ if [ ! -z "${GENESIS_RPC_ENDPOINT}" ]; then
   wget -q ${GENESIS_RPC_ENDPOINT} -O - | jq -r '.result.genesis' > ${_genesis_file}
 else
   iprintf "Copy local genesis.json file"
-  if [ "${CHAIN_ID}" == "dn-testnet" ]; then
+  if [ "${CHAIN_ID}" == "dn-alpha-mainnet" ]; then
     cp /tmp/genesis/genesis-mainnet.json ${_genesis_file}
   elif [ "${CHAIN_ID}" == "dn-testnet-v2" ]; then
     cp /tmp/genesis/genesis-testnet.json ${_genesis_file}
@@ -86,6 +90,11 @@ if [[ ! -z "${VM_ADDRESS}" ]]; then
 fi
 if [[ ! -z "${VM_DATA_LISTEN}" ]]; then
   sed -i "s|vm_data_listen =.*|vm_data_listen = \"${VM_DATA_LISTEN}\"|g" "${_vm_file}"
+fi
+
+iprintf "Configure client.toml from variables"
+if [[ ! -z "${CHAIN_ID}" ]]; then
+  sed -i "s|chain-id =.*|chain-id = \"${CHAIN_ID}\"|g" "${_client_file}"
 fi
 
 iprintf "Configure config.toml from variables"
@@ -112,5 +121,5 @@ if [[ ! -z "${RPC_LISTEN_ADDRESS}" ]]; then
   sed -i "s|^laddr =.*:26657.*|laddr = \"tcp://${RPC_LISTEN_ADDRESS}:26657\"|g" "${_config_file}"
 fi
 
-iprintf "Start dnode"
+iprintf "Start node"
 exec "$@"

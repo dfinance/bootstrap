@@ -44,10 +44,10 @@ nano .env # or vi .env # or any editor you choose
 docker-compose pull && docker-compose up -d
 ```
 
-# If you need to enable rest-api (1317 port),
-# you need to edit the settings file 
-# app.toml -> "[api]" -> "enabled = true"
-# (note, the configuration files appear after the first launch):
+If you need to enable rest-api (1317 port),  
+you need to edit the settings file  
+app.toml -> "[api]" -> "enabled = true"  
+(note, the configuration files appear after the first launch):  
 ```bash
 nano config/.dstation/app.toml
 ```

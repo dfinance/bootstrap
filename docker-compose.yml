@@ -28,6 +28,12 @@ services:
             - '127.0.0.1:9001:9001'   # metrics
             - '127.0.0.1:50051:50051' # compiler
         command: ./dvm -i 0.0.0.0:9001 "http://0.0.0.0:50051" "http://node:50052"
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+                compress: "true"
 
     node:
         container_name: node
@@ -53,3 +59,9 @@ services:
             SEED_MODE: ${SEED_MODE}
         entrypoint: /entrypoint.sh
         command: ./dstation start --inv-check-period=50
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "5"
+                compress: "true"

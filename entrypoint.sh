@@ -6,6 +6,7 @@ set -e
 apk add jq
 
 NODE_MONIKER="${NODE_MONIKER:-my-first-dfinance-node}"
+# LOG_LEVEL="${LOG_LEVEL:-info}"
 CHAIN_ID="${CHAIN_ID}"
 # GENESIS_RPC_ENDPOINT="${GENESIS_RPC_ENDPOINT:-https://rpc.dfinance.co/genesis}"
 
@@ -106,6 +107,9 @@ if [[ ! -z "${ALLOW_DUPLICATE_IP}" ]]; then
 fi
 if [[ ! -z "${NODE_MONIKER}" ]]; then
   sed -i "s|moniker =.*|moniker = \"${NODE_MONIKER}\"|g" "${_config_file}"
+fi
+if [[ ! -z "${LOG_LEVEL}" ]]; then
+  sed -i "s|log_level =.*|log_level = \"${LOG_LEVEL}\"|g" "${_config_file}"
 fi
 if [[ ! -z "${NODE_SEEDS}" ]]; then
   sed -i "s|seeds =.*|seeds = \"${NODE_SEEDS}\"|g" "${_config_file}"

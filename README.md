@@ -70,10 +70,10 @@ docker-compose down
 Open terminal inside running container
 
 ```bash
-docker-compose exec PUT_SERVICE_HERE bash
+docker-compose exec PUT_SERVICE_HERE sh
 
-docker-compose exec node bash
-docker-compose exec dvm bash
+docker-compose exec node sh
+docker-compose exec dvm sh
 ```
 
 ## Advanced use (optional)
@@ -143,6 +143,11 @@ docker-compose up -d
 
 # show logs
 docker-compose logs -f --tail 10
+
+# configure dstation
+dstation config chain-id dn-alpha-mainnet
+dstation config output text
+dstation config node https://rpc.dfinance.co:443
 
 # generate new mnemonic
 dstation keys mnemonic

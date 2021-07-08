@@ -51,7 +51,7 @@ app.toml -> "[api]" -> "enabled = true"
 ```bash
 nano config/.dstation/app.toml
 ```
-# and restart the node:
+and restart the node:  
 ```bash
 docker-compose restart
 ```

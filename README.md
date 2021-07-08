@@ -144,7 +144,10 @@ docker-compose up -d
 # show logs
 docker-compose logs -f --tail 10
 
-# If you need to enable rest-api (1317 port), you need to edit the settings file (note, the configuration files appear after the first launch):
+# If you need to enable rest-api (1317 port),
+# you need to edit the settings file 
+# app.toml -> "[api]" -> "enabled = true"
+# (note, the configuration files appear after the first launch):
 nano config/.dstation/app.toml
 # and restart the node:
 docker-compose restart

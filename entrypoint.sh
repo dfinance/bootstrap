@@ -68,7 +68,7 @@ if [ ! -z "${GENESIS_RPC_ENDPOINT}" ]; then
   wget -q ${GENESIS_RPC_ENDPOINT} -O - | jq -r '.result.genesis' > ${_genesis_file}
 else
   iprintf "Copy local genesis.json file"
-  if [ "${CHAIN_ID}" == "dn-alpha-mainnet" ]; then
+  if [ "${CHAIN_ID}" == "dn-alpha-mainnet-v1-1-0" ]; then
     cp /tmp/genesis/genesis-mainnet.json ${_genesis_file}
   elif [ "${CHAIN_ID}" == "dn-testnet-v2" ]; then
     cp /tmp/genesis/genesis-testnet.json ${_genesis_file}

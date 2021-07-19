@@ -93,14 +93,14 @@ docker-compose exec dvm sh
 ### Initialization of dstation config (mainnet)
 
 ```sh
-docker-compose run --rm --no-deps --entrypoint '' node dstation init my-node-name --chain-id dn-alpha-mainnet
+docker-compose run --rm --no-deps --entrypoint '' node dstation init my-node-name --chain-id dn-alpha-mainnet-v1-1-0
 ```
 
 - `--rm` - remove container after it's been used
 - `--no-deps` - run without dependencies
 - `--entrypoint ''` - disabling entry point for this run
 - `dstation` - docker-compose service name
-- `dstation init my-node-name --chain-id dn-alpha-mainnet` - init command which is run in container
+- `dstation init my-node-name --chain-id dn-alpha-mainnet-v1-1-0` - init command which is run in container
 - `my-node-name` - node name/moniker
 
 ### Custom Configuration
@@ -165,7 +165,7 @@ nano config/.dstation/app.toml
 docker-compose restart
 
 # configure dstation
-dstation config chain-id dn-alpha-mainnet
+dstation config chain-id dn-alpha-mainnet-v1-1-0
 dstation config output text
 dstation config node https://rpc.dfinance.co:443
 
